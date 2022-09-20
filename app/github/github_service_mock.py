@@ -8,6 +8,10 @@ from app.github.github_service import GitHubService
 MOCK_DATA_COMMITS_JSON_FILE_PATH = 'app/github/mockdata_commits.json'
 MOCK_DATA_COMMITS_HEADERS_FILE_PATH = 'app/github/mockdata_commits.head'
 
+# curl -v -H "Accept: application/vnd.github+json" https://api.github.com/repos/elastic/kibana/contributors -D mockdata_contributors.head -o mockdata_contributors.json
+MOCK_DATA_CONTRIBUTORS_JSON_FILE_PATH = 'app/github/mockdata_contributors.json'
+MOCK_DATA_CONTRIBUTORS_HEADERS_FILE_PATH = 'app/github/mockdata_contributors.head'
+
 
 def readHeaderDump(headerDumpFile):
     headers = {}
@@ -17,6 +21,11 @@ def readHeaderDump(headerDumpFile):
                 property, value = line.strip().split(':', 1)
                 headers[property] = value
     return headers
+
+
+def readJsonDump(jsonDumpFile):
+    with open(MOCK_DATA_COMMITS_JSON_FILE_PATH) as fin:
+        return fin.read()
 
 
 class MockResponse:
@@ -35,9 +44,21 @@ class GitHubServiceMock(GitHubService):
         until: datetime | None = None
     ):
         r = MockResponse()
-        with open(MOCK_DATA_COMMITS_JSON_FILE_PATH) as fin:
-            r.json = fin.read()
+        r.json = readJsonDump(MOCK_DATA_COMMITS_JSON_FILE_PATH)
         r.headers = readHeaderDump(MOCK_DATA_COMMITS_HEADERS_FILE_PATH)
+        return r
+    
+    async def get_contributors(
+        self,
+        owner: str,
+        repo: str,
+        page: int = 1,
+        per_page: int = 30,
+    ):
+        r = MockResponse()
+        with open(MOCK_DATA_CONTRIBUTORS_JSON_FILE_PATH) as fin:
+            r.json = fin.read()
+        r.headers = readHeaderDump(MOCK_DATA_CONTRIBUTORS_HEADERS_FILE_PATH)
         return r
 
     async def __aexit__(self, exc_type, exc_value, traceback):

@@ -34,6 +34,15 @@ class GitHubFacade:
     ):
         # TODO return Commit objects here instead of raw response
         return self.github_service.get_commits(owner, repo, author, page, per_page, since, until).json
+    
+    async def get_contributors(
+        self,
+        owner: str,
+        repo: str,
+        page: int = 1,
+        per_page: int = 30,
+    ):
+        return self.github_service.get_contributors(owner, repo, page, per_page).json
 
     async def count_commits_on_day(
         self,
