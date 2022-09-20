@@ -1,10 +1,10 @@
-""" Interface for GitHub service.
-"""
 from abc import ABC, abstractmethod
-import abc
 from datetime import datetime
 
+
 class GitHubService(ABC):
+    """ Interface for GitHub service."""
+    
     @abstractmethod
     async def get_commits(
         self,

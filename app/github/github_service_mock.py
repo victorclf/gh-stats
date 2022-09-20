@@ -1,6 +1,7 @@
 """ Mock of external GitHub API.
 """
 from datetime import datetime
+import json
 
 from app.github.github_service import GitHubService
 
@@ -24,12 +25,17 @@ def readHeaderDump(headerDumpFile):
 
 
 def readJsonDump(jsonDumpFile):
-    with open(MOCK_DATA_COMMITS_JSON_FILE_PATH) as fin:
-        return fin.read()
+    with open(jsonDumpFile) as fin:
+        return json.load(fin)
 
 
 class MockResponse:
-    pass
+    def __init__(self, json, headers):
+        self._json = json
+        self.headers = headers
+
+    def json(self):
+        return self._json
 
 
 class GitHubServiceMock(GitHubService):
@@ -43,11 +49,10 @@ class GitHubServiceMock(GitHubService):
         since: datetime | None = None,
         until: datetime | None = None
     ):
-        r = MockResponse()
-        r.json = readJsonDump(MOCK_DATA_COMMITS_JSON_FILE_PATH)
-        r.headers = readHeaderDump(MOCK_DATA_COMMITS_HEADERS_FILE_PATH)
-        return r
-    
+        json = readJsonDump(MOCK_DATA_COMMITS_JSON_FILE_PATH)
+        headers = readHeaderDump(MOCK_DATA_COMMITS_HEADERS_FILE_PATH)
+        return MockResponse(json, headers)
+
     async def get_contributors(
         self,
         owner: str,
@@ -55,11 +60,9 @@ class GitHubServiceMock(GitHubService):
         page: int = 1,
         per_page: int = 30,
     ):
-        r = MockResponse()
-        with open(MOCK_DATA_CONTRIBUTORS_JSON_FILE_PATH) as fin:
-            r.json = fin.read()
-        r.headers = readHeaderDump(MOCK_DATA_CONTRIBUTORS_HEADERS_FILE_PATH)
-        return r
+        json = readJsonDump(MOCK_DATA_CONTRIBUTORS_JSON_FILE_PATH)
+        headers = readHeaderDump(MOCK_DATA_CONTRIBUTORS_HEADERS_FILE_PATH)
+        return MockResponse(json, headers)
 
     async def __aexit__(self, exc_type, exc_value, traceback):
         pass  # no resources to close in this mock
