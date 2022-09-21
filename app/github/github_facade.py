@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, time
 import re
 
 from app.github.github_service import GitHubService
@@ -20,7 +20,10 @@ class GitHubFacade:
         self.github_service = github_service
 
     def _getNumberOfPages(self, response):
-        return int(PAGE_COUNT_REGEX.match(response.headers['link']).group(1))
+        try:
+            return int(PAGE_COUNT_REGEX.match(response.headers['link']).group(1))
+        except:
+            return 0  # if 'link' header is not present, then no results were found
 
     async def get_commits(
         self,
