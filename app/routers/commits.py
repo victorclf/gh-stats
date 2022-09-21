@@ -31,10 +31,14 @@ async def get_daily_commits(owner: str,
                             repo: str,
                             page: int = Query(default=1, description="Page number"),
                             per_page: int = Query(default=2, ge=1, le=10, description="Authors per page"),
-                            since: datetime | None = Query(default=datetime.now(), description="Start date (range will be trimmed to a maximum of 7 days after this)"),
-                            until: datetime | None = Query(default=datetime.now(), description="End date  (range will be trimmed to a maximum of 7 days after start date)"),
+                            since: datetime | None = Query(default=None, description="Start date (range will be trimmed to a maximum of 7 days after this). Timestamp in ISO 8601 format: YYYY-MM-DDTHH:MM:SSZ"),
+                            until: datetime | None = Query(default=None, description="End date  (range will be trimmed to a maximum of 7 days after start date). Timestamp in ISO 8601 format: YYYY-MM-DDTHH:MM:SSZ"),
                             github: GitHubFacade = Depends(get_github_facade)
                             ):
+    if not since:
+        since = datetime.now()
+    if not until:
+        until = datetime.now()
     days = _getDaysBetween(since, until, min_days=1, max_days=7)
 
     contributors = await github.get_contributors(owner, repo, page, per_page)
@@ -52,8 +56,8 @@ async def get_commits(owner: str,
                       author: str | None = Query(default=None, description="GitHub login or email address by which to filter by commit author."),
                       page: int = Query(default=1, description="Page number"),
                       per_page: int = Query(default=30, ge=1, le=100, description="Items per page"),
-                      since: datetime | None = Query(default=None, description="Only show commits updated after the given time."),
-                      until: datetime | None = Query(default=None, description="Only commits before this date will be returned."),
+                      since: datetime | None = Query(default=None, description="Only show commits updated after the given time. Timestamp in ISO 8601 format: YYYY-MM-DDTHH:MM:SSZ"),
+                      until: datetime | None = Query(default=None, description="Only commits before this date will be returned. Timestamp in ISO 8601 format: YYYY-MM-DDTHH:MM:SSZ"),
                       github: GitHubFacade = Depends(get_github_facade)
                       ):
     return await github.get_commits(owner, repo, author, page, per_page, since, until)
