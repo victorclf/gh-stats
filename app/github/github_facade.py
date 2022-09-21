@@ -54,8 +54,8 @@ class GitHubFacade:
     ) -> int:
         page = 1
         per_page = 1
-        since = day
-        until = day
+        since = datetime.combine(day, time.min) # first second of day
+        until = datetime.combine(day, time.max) # last second of the day
 
         response = await self.github_service.get_commits(owner, repo, author, page, per_page, since, until)
         n_commits = self._getNumberOfPages(response)  # since every page here has a single commit, the number of pages is the number of commits
