@@ -27,10 +27,9 @@ class GitHubServiceImpl(GitHubService):
         if author:
             params['author'] = author
         if since:
-            params['since'] = since.isoformat
+            params['since'] = since.isoformat()
         if until:
-            params['until'] = until.isoformat
-        return await self.client.get(f'/repos/{owner}/{repo}/commits', params=params)
+            params['until'] = until.isoformat()
 
     async def get_contributors(
         self,
