@@ -1,9 +1,8 @@
-from fastapi.testclient import TestClient
+import pytest
 from app.dependencies import get_github_service
 from app.github.github_service_mock import GitHubServiceMock
-
 from app.main import app
-
+from fastapi.testclient import TestClient
 
 client = TestClient(app)
 
@@ -12,7 +11,13 @@ async def mock_github_service():
     async with GitHubServiceMock() as service:
         yield service
 
-app.dependency_overrides[get_github_service] = mock_github_service
+@pytest.fixture(scope="module", autouse=True)
+def mock_github_fixture():
+    app.dependency_overrides[get_github_service] = mock_github_service
+    yield
+    app.dependency_overrides = {}
+
+
 
 owner = "abc"
 repo = "abc"
@@ -66,7 +71,7 @@ def test_get_daily_commits_clip_max_days():
 def test_get_commits():
     per_page = 5
 
-    response = client.get(f"/api/v1/repos/{owner}/{repo}/commits?per_page=5")
+    response = client.get(f"/api/v1/repos/{owner}/{repo}/commits?per_page={per_page}")
 
     assert response.status_code == 200
     j = response.json()
