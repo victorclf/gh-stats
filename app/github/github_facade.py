@@ -14,7 +14,8 @@ PAGE_COUNT_REGEX = re.compile(r'.*?rel="next".*?[^_]+page=([0-9]+).*?"last".*')
 class GitHubFacade:
     """ Facade for external GitHub service. 
     Simplifies access to external GitHub service by providing methods closer to what we need in the business logic.
-    """    
+    """
+
     def __init__(self, github_service: GitHubService):
         self.github_service = github_service
 
@@ -33,7 +34,7 @@ class GitHubFacade:
     ) -> list[Commit]:
         commits_json = (await self.github_service.get_commits(owner, repo, author, page, per_page, since, until)).json()
         return [Commit(author=c['author']['login'], message=c['commit']['message'], date=c['commit']['author']['date']) for c in commits_json]
-    
+
     async def get_contributors(
         self,
         owner: str,
