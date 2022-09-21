@@ -1,11 +1,11 @@
 from fastapi import Depends
 from app.github.github_facade import GitHubFacade
 from app.github.github_service import GitHubService
-from app.github.github_service_mock import GitHubServiceMock
+from app.github.github_service_impl import GitHubServiceImpl
 
 
 async def get_github_service() -> GitHubService:
-    async with GitHubServiceMock() as service:
+    async with GitHubServiceImpl() as service:
         yield service
 
 

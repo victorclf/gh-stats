@@ -1,5 +1,3 @@
-""" Mock of external GitHub API.
-"""
 from datetime import datetime
 import json
 
@@ -39,6 +37,9 @@ class MockResponse:
 
 
 class GitHubServiceMock(GitHubService):
+    """ Mock of external GitHub API.
+    """
+    
     async def get_commits(
         self,
         owner: str,
