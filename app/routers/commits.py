@@ -30,7 +30,7 @@ def _getDaysBetween(since: datetime, until: datetime, min_days=1, max_days=7) ->
 async def get_daily_commits(owner: str,
                             repo: str,
                             page: int = Query(default=1, description="Page number"),
-                            per_page: int = Query(default=1, ge=1, le=10, description="Authors per page"),
+                            per_page: int = Query(default=2, ge=1, le=10, description="Authors per page"),
                             since: datetime | None = Query(default=datetime.now(), description="Start date (range will be trimmed to a maximum of 7 days after this)"),
                             until: datetime | None = Query(default=datetime.now(), description="End date  (range will be trimmed to a maximum of 7 days after start date)"),
                             github: GitHubFacade = Depends(get_github_facade)
@@ -51,7 +51,7 @@ async def get_commits(owner: str,
                       repo: str,
                       author: str | None = Query(default=None, description="GitHub login or email address by which to filter by commit author."),
                       page: int = Query(default=1, description="Page number"),
-                      per_page: int = Query(default=30, ge=30, le=100, description="Items per page"),
+                      per_page: int = Query(default=30, ge=1, le=100, description="Items per page"),
                       since: datetime | None = Query(default=None, description="Only show commits updated after the given time."),
                       until: datetime | None = Query(default=None, description="Only commits before this date will be returned."),
                       github: GitHubFacade = Depends(get_github_facade)
