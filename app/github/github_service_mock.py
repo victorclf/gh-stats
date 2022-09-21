@@ -51,7 +51,7 @@ class GitHubServiceMock(GitHubService):
     ):
         json = readJsonDump(MOCK_DATA_COMMITS_JSON_FILE_PATH)
         headers = readHeaderDump(MOCK_DATA_COMMITS_HEADERS_FILE_PATH)
-        return MockResponse(json, headers)
+        return MockResponse(json[(page - 1) * per_page:per_page], headers)
 
     async def get_contributors(
         self,
@@ -62,7 +62,7 @@ class GitHubServiceMock(GitHubService):
     ):
         json = readJsonDump(MOCK_DATA_CONTRIBUTORS_JSON_FILE_PATH)
         headers = readHeaderDump(MOCK_DATA_CONTRIBUTORS_HEADERS_FILE_PATH)
-        return MockResponse(json, headers)
+        return MockResponse(json[(page - 1) * per_page:per_page], headers)
 
     async def __aexit__(self, exc_type, exc_value, traceback):
         pass  # no resources to close in this mock
