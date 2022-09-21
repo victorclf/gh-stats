@@ -13,12 +13,12 @@ repo = "kibana"
 
 def test_get_daily_commits():
     per_page = 1
-    since = '2022-09-15T00:00:00'
-    until = '2022-09-15T00:00:00'
+    start_day = '2022-09-15'
+    end_day = '2022-09-15'
     n_days = 1
     author = 'lgmys'
 
-    response = client.get(f"/api/v1/repos/{owner}/{repo}/stats/daily_commits?since={since}&until={until}&per_page={per_page}&author={author}")
+    response = client.get(f"/api/v1/repos/{owner}/{repo}/stats/daily_commits?start_day={start_day}&end_day={end_day}&per_page={per_page}&author={author}")
 
     assert response.status_code == 200
     j = response.json()
@@ -26,16 +26,16 @@ def test_get_daily_commits():
     for stat in j:
         assert len(stat['commits_on_day']) == n_days
         assert stat['author'] == author
-        assert stat['commits_on_day'][since] == 2
+        assert stat['commits_on_day'][start_day] == 2
 
 
 def test_get_commits():
     per_page = 2
-    since = '2022-09-15T00:00:00'
-    until = '2022-09-15T23:59:59'
+    start_day = '2022-09-15'
+    end_day = '2022-09-15'
     author = 'lgmys'
 
-    response = client.get(f"/api/v1/repos/{owner}/{repo}/commits?per_page={per_page}&author={author}&since={since}&until={until}")
+    response = client.get(f"/api/v1/repos/{owner}/{repo}/commits?per_page={per_page}&author={author}&start_day={start_day}&end_day={end_day}")
 
     assert response.status_code == 200
     j = response.json()

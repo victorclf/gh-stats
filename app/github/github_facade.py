@@ -1,4 +1,4 @@
-from datetime import datetime, time
+from datetime import date, datetime, time
 import re
 
 from app.github.github_service import GitHubService
@@ -32,9 +32,11 @@ class GitHubFacade:
         author: str | None = None,
         page: int = 1,
         per_page: int = 30,
-        since: datetime | None = None,
-        until: datetime | None = None
+        start_day: date | None = None,
+        end_day: date | None = None
     ) -> list[Commit]:
+        since = datetime.combine(start_day, time.min) if start_day else None # first second of 'since' day
+        until = datetime.combine(end_day, time.max) if end_day else None # last second of 'until' day
         commits_json = (await self.github_service.get_commits(owner, repo, author, page, per_page, since, until)).json()
         return [Commit(author=c['author']['login'], message=c['commit']['message'], date=c['commit']['author']['date']) for c in commits_json]
 
@@ -53,12 +55,12 @@ class GitHubFacade:
         owner: str,
         repo: str,
         author: str,
-        day: datetime,
+        day: date,
     ) -> int:
         page = 1
         per_page = 1
-        since = datetime.combine(day, time.min) # first second of day
-        until = datetime.combine(day, time.max) # last second of the day
+        since = datetime.combine(day, time.min) # first second of 'since' day
+        until = datetime.combine(day, time.max) # last second of 'until' day
 
         response = await self.github_service.get_commits(owner, repo, author, page, per_page, since, until)
         n_commits = self._getNumberOfPages(response)  # since every page here has a single commit, the number of pages is the number of commits
