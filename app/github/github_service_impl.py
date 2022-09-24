@@ -45,11 +45,6 @@ class GitHubServiceImpl(GitHubService):
         if until:
             params['until'] = until.isoformat()
         response = await self.client.get(f'/repos/{owner}/{repo}/commits', params=params)
-        # TODO better way to log this
-        print('\nget_commits response from GitHub')
-        print(response.headers)
-        print(response.json())
-        
         return response
 
     async def get_contributors(
@@ -61,11 +56,6 @@ class GitHubServiceImpl(GitHubService):
     ):
         params = {'page': page, 'per_page': per_page}
         response = await self.client.get(f'/repos/{owner}/{repo}/contributors', params=params)
-        # TODO better way to log this
-        print('get_contributors response from GitHub')
-        print(response.headers)
-        print(response.json)
-        
         return response
 
     async def __aexit__(self, exc_type, exc_value, traceback):
