@@ -5,7 +5,8 @@ from app.github.github_service import GitHubService
 from app.models.commits import Commit
 
 """
-Regex to extract number of pages from headers['link']. For example:
+Regex to extract number of pages from headers['link'] in the GitHub API response. This is an example of that header field:
+
 link: <https://api.github.com/repositories/7833168/commits?per_page=1&page=2>; rel="next", <https://api.github.com/repositories/7833168/commits?per_page=1&page=56525>; rel="last"
 """
 PAGE_COUNT_REGEX = re.compile(r'.*?rel="next".*?[^_]+page=([0-9]+).*?"last".*')
@@ -57,11 +58,14 @@ class GitHubFacade:
         author: str,
         day: date,
     ) -> int:
+        # To determine the number of commits using GitHub's REST API, we use a page size of 1 (per_page param)
+        # so that the number of the last page is equal to the number of commits available. The number of the 
+        # last page can be determined from the link to the last page in the response headers.
         page = 1
         per_page = 1
         since = datetime.combine(day, time.min) # first second of 'since' day
         until = datetime.combine(day, time.max) # last second of 'until' day
 
         response = await self.github_service.get_commits(owner, repo, author, page, per_page, since, until)
-        n_commits = self._getNumberOfPages(response)  # since every page here has a single commit, the number of pages is the number of commits
+        n_commits = self._getNumberOfPages(response)
         return n_commits
